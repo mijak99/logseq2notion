@@ -10,10 +10,12 @@ This is a non exhaustive list of "special" logseq markup converted to Obsidian f
 - namespaces to directories
 - page properties
 - asset links
+- Excalidraw plugin support 
+
 
 ## Not supported
 
-- Excalidraw (yet)
+- Excalidraw with embedded images
 
 
 # Usage

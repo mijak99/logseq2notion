@@ -65,6 +65,8 @@ EXCALIDRAW_LINK_MD_PATTERN = re.compile(r"(!?\[.*?\]\()(\.\./" + re.escape(LOGSE
 EXCALIDRAW_LINK_WIKI_PATTERN = re.compile(r"(!?\[\[)(\.\./" + re.escape(LOGSEQ_EXCALIDRAW_DIR) + r"/)(.*?)\]\]")
 EXCALIDRAW_FILE_PATTERN = re.compile(r'^(excalidraw-\d\d\d\d-.*\.md$)')
 
+migration_errors = [] # List to store errors for output to the user after migration
+
 # --- Helper Functions ---
 
 def convert_asset_link(match):
@@ -128,12 +130,12 @@ def from_logseq_line(line):
     return line
 
 
-def process_logseq_excalidraw_file(logseq_file_path, obsidian_excalidraw_path):
+def process_logseq_excalidraw_file(logseq_graph_path, logseq_file_path, obsidian_excalidraw_path):
     """
     Reads a Logseq Markdown file containong an embedded excalidraw file, converts its content, and writes
     an excalidraw file to the Obsidian vault.
     """
-    logging.info(f'TODO: Processing excalidraw file: {logseq_file_path}') 
+    logging.info(f'Processing excalidraw file: {logseq_file_path}') 
 
     try:
         content = logseq_file_path.read_text(encoding='utf-8')
@@ -146,9 +148,8 @@ def process_logseq_excalidraw_file(logseq_file_path, obsidian_excalidraw_path):
     
     if match:
         json_string = match.group(1)
-        logging.debug(f"Found json: {json_string}")
 
-        # Create a new JSON object and add the "version" property
+        # Create a new JSON object and add the "version", type, and source properties
         json_object = json.loads(json_string)
         json_object["type"] = "excalidraw"
         json_object["version"] = 2
@@ -156,8 +157,6 @@ def process_logseq_excalidraw_file(logseq_file_path, obsidian_excalidraw_path):
 
         # Convert back to string
         updated_json_string = json.dumps(json_object, indent=4)
-        logging.debug(f"Updated JSON: {updated_json_string}")
-        # make object from json
 
         # --- Determine Output Path (Handle Namespaces -> Folders) ---
         obsidian_file_path = obsidian_excalidraw_path / logseq_file_path.name
@@ -194,6 +193,7 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path):
     lines = content.splitlines()
     properties = {}
     content_lines = []
+    errors = []
     frontmatter_processed = False
     in_blockquote = False
     initial_block = True # Are we still in the potential frontmatter/property block at the top?
@@ -289,18 +289,35 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path):
 
 
     # --- Determine Output Path (Handle Namespaces -> Folders) ---
-    relative_path = logseq_file_path.relative_to(logseq_graph_path / LOGSEQ_PAGES_DIR)
-    obsidian_file_path = obsidian_vault_path / relative_path
+    try:
+        # Ensure paths are absolute before calculating relative path
+        logging.debug("xxx file path stuff here")
+        logging.debug(f"grap path: {logseq_graph_path}, file {logseq_file_path}")
+        logseq_file_path = logseq_file_path.resolve()
+        logging.debug(f"resolved to grap path: {logseq_graph_path}, file {logseq_file_path}")
+        
+        relative_path = logseq_file_path.relative_to(logseq_graph_path / LOGSEQ_PAGES_DIR)
+        obsidian_file_path = obsidian_vault_path / relative_path
+        logging.debug(f"relative path: {relative_path}")
 
-    # Create parent directories if they don't exist
-    obsidian_file_path.parent.mkdir(parents=True, exist_ok=True)
+        # If the filename of the logseq file contains triple underscores (___) in the name, 
+        # treat those names as a folder separator in the destination vault
+        # This is how logseq deals with namespaces
+        if "___" in obsidian_file_path.name:
+            parts = obsidian_file_path.name.split("___")
+            obsidian_file_path = obsidian_file_path.parent / Path(*parts)
+
+
+        # Create parent directories if they don't exist
+        obsidian_file_path.parent.mkdir(parents=True, exist_ok=True)
 
     # --- Write the converted file ---
-    try:
         obsidian_file_path.write_text(final_content, encoding='utf-8')
         logging.info(f"Converted: {logseq_file_path.name} -> {obsidian_file_path}")
+
     except Exception as e:
-        logging.error(f"Error writing file {obsidian_file_path}: {e}")
+        logging.error(f"Error when processing {logseq_file_path}: {e} - at line {e.__traceback__.tb_lineno}")
+        migration_errors.append(f"- Error (line:{ {e.__traceback__.tb_lineno}}) processing {logseq_file_path}:\n  - {e}\n occured ")
 
 
 # --- Main Conversion Logic ---
@@ -326,8 +343,24 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
         if force_overwrite:
             logging.warning(f"Output directory {obsidian_vault_path} exists. Overwriting.")
             try:
-                if clean: 
-                    shutil.rmtree(obsidian_vault_path)
+                if clean:
+                    # remove the contents of the directory if --clean is specified
+                    # but keep the ".obsidian" subdirectory if it exists
+                    obsidian_config_path = obsidian_vault_path / ".obsidian"
+                    if obsidian_config_path.is_dir(): # remove everything but the config directory
+                        logging.info(f"Removing existing output directory (keeping config) {obsidian_vault_path}") 
+                        for item in obsidian_vault_path.iterdir():
+                            if item != obsidian_config_path:
+                                if item.is_dir():
+                                    shutil.rmtree(item)
+                                else:
+                                    item.unlink()  
+                    else: # ok to remove everything
+                        logging.info(f"Removing existing output directory {obsidian_vault_path}")
+                        shutil.rmtree(obsidian_vault_path)
+
+                    
+
             except Exception as e:
                 logging.error(f"Could not remove existing output directory {obsidian_vault_path}: {e}")
                 return False
@@ -390,7 +423,7 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
     for md_file in logseq_pages.rglob('*.md'): # rglob searches recursively
          if md_file.is_file():
             if EXCALIDRAW_FILE_PATTERN.match(md_file.name):
-                 process_logseq_excalidraw_file(md_file, obsidian_excalidraw)
+                 process_logseq_excalidraw_file(logseq_graph_path, md_file, obsidian_excalidraw)
             else:
                 process_logseq_md_file(md_file, obsidian_vault_path)
             file_count += 1
@@ -404,6 +437,16 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
     logging.warning("- Page properties (frontmatter)")
     logging.warning("- Formatting and block structures")
     logging.warning("- Excalidraw drawings may need manual relinking if Logseq used complex plugin data.")
+
+    # write all the errors to a file in the obsidian vault root, named migration-errors.md
+    if migration_errors:
+        error_file_path = obsidian_vault_path / "migration-errors.md"
+        with error_file_path.open('w', encoding='utf-8') as error_file:
+            for error in migration_errors:
+                error_file.write(f"- {error}\n")
+        logging.info(f"Errors logged to {error_file_path}")
+
+
 
     return True
 
