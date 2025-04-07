@@ -1,0 +1,200 @@
+{
+  "main": {
+    "id": "90a88dc685c47b2d",
+    "type": "split",
+    "children": [
+      {
+        "id": "78602a5561502a65",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4ae3cba1ba34a8a9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Exacalidraw page.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Exacalidraw page"
+            }
+          },
+          {
+            "id": "b7f8d3b7c7c4fb8f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Exacalidraw page.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Exacalidraw page"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "48ba18b8037e726e",
+    "type": "split",
+    "children": [
+      {
+        "id": "2b8be3cddb73e151",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8ccb11127107e865",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "8175aa138f17f1c6",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "015777bfba7719cd",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 347.5
+  },
+  "right": {
+    "id": "527fa551aa97a569",
+    "type": "split",
+    "children": [
+      {
+        "id": "958bdd7dfbdd8358",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bcc1c5de786d73ab",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Exacalidraw page.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Exacalidraw page"
+            }
+          },
+          {
+            "id": "090d277cc9df7276",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Exacalidraw page.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Exacalidraw page"
+            }
+          },
+          {
+            "id": "8a866bd3329b2f8e",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "098ac6b23adcbc8f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Exacalidraw page.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Exacalidraw page"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-excalidraw-plugin:New drawing": false
+    }
+  },
+  "active": "b7f8d3b7c7c4fb8f",
+  "lastOpenFiles": [
+    "Excalidraw/excalidraw-2025-04-07-16-22-56.md",
+    "Excalidraw/excalidraw-2025-04-07-11-42-51.md",
+    "Excalidraw/Drawing 2025-04-07 15.49.40.excalidraw.md",
+    "Excalidraw/Drawing 2025-04-07 16.04.38.excalidraw.md",
+    "Excalidraw/excalidraw-2025-04-07-11-42-51.md.md",
+    "Exacalidraw page.md",
+    "Asset Page.md",
+    "contents.md",
+    "Testpage with test cases.md",
+    "Excalidraw"
+  ]
+}
