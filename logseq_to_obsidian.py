@@ -57,6 +57,8 @@ ASSET_EMBED_LINK_PATTERN = re.compile(r"(!\[.*?\]\()(\.\./" + re.escape(LOGSEQ_A
 # Simpler embed style like ![../assets/image.png] - Less common? Handled by below
 OBSIDIAN_ASSET_EMBED_PATTERN_SIMPLE = re.compile(r"(!\[)(\.\./" + re.escape(LOGSEQ_ASSETS_DIR) + r"/)(.*?)\]")
 
+# Inline quotePatterns (e.g., > text) 
+INLINE_BLOCKQUOTE_PATTERN = re.compile(r"^\s*>\s*(.*)")
 
 # Links to Excalidraw files (common patterns)
 # Matches [[../excalidraw/file.excalidraw]] or ![...](../excalidraw/...)
@@ -120,13 +122,29 @@ def replace_any_todo_items(line):
     line = re.sub(r'^((\s*)(-?\s)?)(DONE)\W+(.*)$', r'\2- [x] \5', line)
     return line
 
-def from_logseq_line(line): 
+def replace_any_linked_items(line, namespaceToFolder=False):
+    # Links can be in the form of [[...]] or [...](...)
+    # This regex captures both styles and replaces them with the Obsidian format
+    # iterate over all the matches in the line, replace it with the obsidian format 
+    if not namespaceToFolder: # if no conversion to folders, the kinks must be updated to the obsidian format
+        logseq_link_pattern = r'#?\[\[(.*?)\]\]'
+        for match in re.finditer(logseq_link_pattern, line):
+            # logseq does not have folders, so if there is a folder assumed in the link, we need to 
+            # replace the slash with ___ to retain the connection to the original file 
+            updated_link = re.sub(r'\/', '___', match.group(1))  # replace / with ___ to match the obsidian format
+            line = line.replace(match.group(1), updated_link)
+
+
+    return line
+
+def from_logseq_line(line, namespaceToFolder=False): 
     '''
     process a markdown line and removes logseq peculiarities, eg
     - unnecessary leading bullets 
     '''
     line = remove_leading_bullets(line) # must be called before todo_items
     line = replace_any_todo_items(line)
+    line = replace_any_linked_items(line, namespaceToFolder=namespaceToFolder) 
     return line
 
 
@@ -176,7 +194,7 @@ def process_logseq_excalidraw_file(logseq_graph_path, logseq_file_path, obsidian
     else: 
         logging.error(f'No json in the excalidraw diagram: {obsidian_file_path} ')
 
-def process_logseq_md_file(logseq_file_path, obsidian_vault_path):
+def process_logseq_md_file(logseq_file_path, obsidian_vault_path, namespaceToFolder=False):
     """
     Reads a Logseq Markdown file, converts its content, and writes
     it to the corresponding location in the Obsidian vault.
@@ -244,9 +262,8 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path):
             if line.startswith("```"): # start blockquote
                 # no processing needed on this page or 
                 in_blockquote = True
-            elif line.startswith(">"): # inline blockquote
+            elif INLINE_BLOCKQUOTE_PATTERN.match(line): # inline blockquote
                 pass # do no processing            
-
 
             # always put the line out
             content_lines.append(from_logseq_line(line))
@@ -292,20 +309,23 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path):
     try:
         # Ensure paths are absolute before calculating relative path
         logging.debug("xxx file path stuff here")
-        logging.debug(f"grap path: {logseq_graph_path}, file {logseq_file_path}")
+        logging.debug(f"graph path: {logseq_graph_path}, file {logseq_file_path}")
         logseq_file_path = logseq_file_path.resolve()
+        logseq_pages_path = (logseq_graph_path / LOGSEQ_PAGES_DIR).resolve()
+        logging.debug(f"pages path: {logseq_pages_path}, file {logseq_file_path}")
         logging.debug(f"resolved to grap path: {logseq_graph_path}, file {logseq_file_path}")
         
-        relative_path = logseq_file_path.relative_to(logseq_graph_path / LOGSEQ_PAGES_DIR)
+        relative_path = logseq_file_path.relative_to(logseq_pages_path)
         obsidian_file_path = obsidian_vault_path / relative_path
         logging.debug(f"relative path: {relative_path}")
 
-        # If the filename of the logseq file contains triple underscores (___) in the name, 
-        # treat those names as a folder separator in the destination vault
-        # This is how logseq deals with namespaces
-        if "___" in obsidian_file_path.name:
-            parts = obsidian_file_path.name.split("___")
-            obsidian_file_path = obsidian_file_path.parent / Path(*parts)
+        if namespaceToFolder:
+            # If the filename of the logseq file contains triple underscores (___) in the name, 
+            # treat those names as a folder separator in the destination vault
+            # This is how logseq deals with namespaces
+            if "___" in obsidian_file_path.name:
+                parts = obsidian_file_path.name.split("___")
+                obsidian_file_path = obsidian_file_path.parent / Path(*parts)
 
 
         # Create parent directories if they don't exist
@@ -322,7 +342,7 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path):
 
 # --- Main Conversion Logic ---
 
-def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_overwrite=False, clean=False):
+def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_overwrite=False, clean=False, namespaceToFolder=False):
     """Main function to orchestrate the conversion."""
 
     logseq_graph_path = Path(logseq_graph_path).resolve()
@@ -394,8 +414,15 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
     obsidian_journals = obsidian_vault_path / LOGSEQ_JOURNALS_DIR # Keep same name usually
     if logseq_journals.is_dir():
         try:
-            shutil.copytree(logseq_journals, obsidian_journals)
-            logging.info(f"Copied journals to {obsidian_journals}")
+            logging.info(f"Copying journals to {obsidian_journals}")
+
+            for md_file in logseq_journals.rglob('*.md'): # rglob searches recursively
+                if md_file.is_file():
+                    process_logseq_md_file(md_file, obsidian_vault_path, namespaceToFolder)
+                    file_count += 1
+            logging.info(f"Copied {file_count} journal files to {obsidian_journals}")
+            
+
         except Exception as e:
             logging.error(f"Could not copy journals from {logseq_journals}: {e}")
     else:
@@ -425,7 +452,7 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
             if EXCALIDRAW_FILE_PATTERN.match(md_file.name):
                  process_logseq_excalidraw_file(logseq_graph_path, md_file, obsidian_excalidraw)
             else:
-                process_logseq_md_file(md_file, obsidian_vault_path)
+                process_logseq_md_file(md_file, obsidian_vault_path, namespaceToFolder)
             file_count += 1
 
     logging.info(f"Processed {file_count} Markdown files from the 'pages' directory.")
@@ -458,6 +485,7 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--force", action="store_true", help="Overwrite the output directory if it exists.")
     parser.add_argument("-c", "--clean", action="store_true", help="Remove the output directory if it exists.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose debug logging.")
+    parser.add_argument("-n", "--namespaces", action="store_true", help="Convert namespaces to folders.")
 
     args = parser.parse_args()
 
@@ -468,4 +496,4 @@ if __name__ == "__main__":
     logseq_graph_path = Path(args.logseq_dir)
     # obsidian_vault_path is handled inside the main function
 
-    convert_logseq_to_obsidian(args.logseq_dir, args.obsidian_dir, args.force, args.clean)
+    convert_logseq_to_obsidian(args.logseq_dir, args.obsidian_dir, args.force, args.clean, args.namespaces)
