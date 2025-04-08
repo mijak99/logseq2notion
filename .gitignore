@@ -1,4 +1,6 @@
 # keep the output vault configuration
 output-vault/[a-z]*
 
+.vscode
 
+__pycache__/
