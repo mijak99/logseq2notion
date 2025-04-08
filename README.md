@@ -5,11 +5,13 @@ This simple tool attempts to converts a logseq graph to an Obsidian Vault
 
 ## TODO
 
-- [ ] Excaldiraw filenames (plugin alias) to Obsidian
 - [x] Namespaces as a parameter -- when folders are used, links must also be adjusted
-- [ ] Remove leading indents that does not start with a bullet [\-*]
+- [ ] Excaldiraw filenames (plugin alias) to Obsidian
+    Has `excalidraw-plugin-alias:: My Cool Diagram` as a page property
+    See [[excalidraw-2025-04-07-11-42-51]]
 - [ ] Excalidraw render links / embeds
 - [ ] Track indentation levels, to better manage weird indentations
+- [ ] Remove leading indents that does not start with a bullet [\-*]
 
 ## Features
 

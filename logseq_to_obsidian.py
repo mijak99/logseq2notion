@@ -126,14 +126,22 @@ def replace_any_linked_items(line, namespaceToFolder=False):
     # Links can be in the form of [[...]] or [...](...)
     # This regex captures both styles and replaces them with the Obsidian format
     # iterate over all the matches in the line, replace it with the obsidian format 
+    logseq_link_pattern = r'#?\[\[(.*?)\]\]'
     if not namespaceToFolder: # if no conversion to folders, the kinks must be updated to the obsidian format
-        logseq_link_pattern = r'#?\[\[(.*?)\]\]'
         for match in re.finditer(logseq_link_pattern, line):
             # logseq does not have folders, so if there is a folder assumed in the link, we need to 
             # replace the slash with ___ to retain the connection to the original file 
             updated_link = re.sub(r'\/', '___', match.group(1))  # replace / with ___ to match the obsidian format
             line = line.replace(match.group(1), updated_link)
 
+    else:
+        for match in re.finditer(logseq_link_pattern, line):
+            # if there is a ___  the link, we need to 
+            # replace it with a slash in the file 
+            
+            link = match.group(1)
+            updated_link = re.sub(r'___', '\/', link)  # replace / with ___ to match the obsidian format
+            line = line.replace(link, updated_link)  
 
     return line
 
@@ -153,7 +161,7 @@ def process_logseq_excalidraw_file(logseq_graph_path, logseq_file_path, obsidian
     Reads a Logseq Markdown file containong an embedded excalidraw file, converts its content, and writes
     an excalidraw file to the Obsidian vault.
     """
-    logging.info(f'Processing excalidraw file: {logseq_file_path}') 
+    logging.debug(f'Processing excalidraw file: {logseq_file_path}') 
 
     try:
         content = logseq_file_path.read_text(encoding='utf-8')
@@ -200,7 +208,7 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path, namespaceToFol
     it to the corresponding location in the Obsidian vault.
     """
 
-    logging.info(f"Converting: {logseq_file_path.name}")
+    logging.debug(f"Converting: {logseq_file_path.name}")
 
     try:
         content = logseq_file_path.read_text(encoding='utf-8')
@@ -250,7 +258,7 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path, namespaceToFol
 
                 initial_block = False
                 frontmatter_processed = True
-                content_lines.append(from_logseq_line(line))
+                content_lines.append(from_logseq_line(line, namespaceToFolder=namespaceToFolder))
         elif in_blockquote: 
             if line.startswith("```"): # end blockquote
                 in_blockquote = False
@@ -266,7 +274,7 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path, namespaceToFol
                 pass # do no processing            
 
             # always put the line out
-            content_lines.append(from_logseq_line(line))
+            content_lines.append(from_logseq_line(line, namespaceToFolder=namespaceToFolder))
 
 
     # --- Join content back (without properties) ---
