@@ -3,15 +3,27 @@
 
 This simple tool attempts to converts a logseq graph to an Obsidian Vault
 
+## Testing
+
+Large vault
+> python logseq_to_obsidian.py ~/logseq -f ~/test-obsidian -c 
+
+Small test vault
+> python logseq_to_obsidian.py tests/testgraph/ -f output-vault/  -v -c
+
 ## TODO
 
 - [x] Namespaces as a parameter -- when folders are used, links must also be adjusted
-- [ ] Excaldiraw filenames (plugin alias) to Obsidian
+- [x] Excalidraw filenames (plugin alias) to Obsidian
     Has `excalidraw-plugin-alias:: My Cool Diagram` as a page property
-    See [[excalidraw-2025-04-07-11-42-51]]
-- [ ] Excalidraw render links / embeds
+
+- [x] Excalidraw render links / embeds
+- [x] Tags can be used instead of page-links in logseq. If a tag is used in logseq, and the referred page exists in logseq - link it! 
+
+### Someday...
 - [ ] Track indentation levels, to better manage weird indentations
 - [ ] Remove leading indents that does not start with a bullet [\-*]
+- [ ] Blocks starting with 'id:: long-id-hash' -and references to them - might want some love
 
 ## Features
 
@@ -21,12 +33,14 @@ This is a non exhaustive list of "special" logseq markup converted to Obsidian f
 - page properties
 - asset links
 - Excalidraw plugin support 
+    - If you have named/labelled your drawing in logseq-excalidraw, the conversion will retain your name as a page alias. 
+    - This means your file is searchable as in logseq, but it's unfortunately still hard to browse for the diagram if you forget your labels
 
 
 ## Not supported
 
 - whiteboards
-- 
+- numbered lists
 
 # Usage
 

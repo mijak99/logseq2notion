@@ -21,22 +21,7 @@ LOGSEQ_EXCALIDRAW_DIR = "excalidraw" # Common name, adjust if yours differs
 OBSIDIAN_ASSETS_DIR = "assets" # Standard Obsidian assets folder name
 OBSIDIAN_EXCALIDRAW_DIR = "Excalidraw" # Common name for Obsidian Excalidraw plugin folder
 
-OBSIDIAN_EXCALIDRAW_HEADER = '''---
 
-excalidraw-plugin: parsed
-tags: [excalidraw]
-
----
-==⚠  Switch to EXCALIDRAW VIEW in the MORE OPTIONS menu of this document. ⚠== You can decompress Drawing data with the command palette: 'Decompress current Excalidraw file'. For more info check in plugin settings under 'Saving'
-
-
-# Excalidraw Data
-
-## Text Elements
-
-%%
-## Drawing
-'''
 
 
 # --- Logging Setup ---
@@ -117,8 +102,8 @@ def remove_leading_bullets(line):
     return re.sub(r'^\-\s*', '', line)
 
 def replace_any_todo_items(line):
-    line = re.sub(r'^((\s*)(-?\s)?)(TODO|NOW|WAITING|LATER)\W+(.*)$', r'\2- [ ] \5', line)
-    line = re.sub(r'^((\s*)(-?\s)?)(DOING)\W+(.*)$', r'\2- [/] \5', line)
+    line = re.sub(r'^((\s*)(-?\s)?)(TODO|WAITING|LATER)\W+(.*)$', r'\2- [ ] \5', line)
+    line = re.sub(r'^((\s*)(-?\s)?)(DOING|NOW)\W+(.*)$', r'\2- [/] \5', line)
     line = re.sub(r'^((\s*)(-?\s)?)(DONE)\W+(.*)$', r'\2- [x] \5', line)
     return line
 
@@ -145,6 +130,28 @@ def replace_any_linked_items(line, namespaceToFolder=False):
 
     return line
 
+def replace_excalidraw_renders(line):
+    # Excalidraw renders are in the form of {{renderer excalidraw, ...}}
+    # {{renderer excalidraw, excalidraw-2025-04-07-16-22-56}}
+    render_pattern = r'{{renderer excalidraw, (.*?)}}'
+    line = re.sub(render_pattern, r'![[Excalidraw/\1]]', line)
+
+    return line
+
+def replace_tags(line): 
+
+    tag_pattern = r'#([\w\/]+)'
+
+    # find any links
+    for match in re.finditer(tag_pattern, line):
+        tag = match.group(1)
+        if file_exists(tag): # yes, the tag is a link to an existing page
+            # logging.debug(f"TAG #{tag}: {line} - found {file_exists(tag)}")
+            line = line.replace(tag, f'[[{tag}]]')  # Convert to Obsidian link format
+            # logging.debug(f"REPLCED #{tag}: {line}")
+    return line
+
+
 def from_logseq_line(line, namespaceToFolder=False): 
     '''
     process a markdown line and removes logseq peculiarities, eg
@@ -153,6 +160,8 @@ def from_logseq_line(line, namespaceToFolder=False):
     line = remove_leading_bullets(line) # must be called before todo_items
     line = replace_any_todo_items(line)
     line = replace_any_linked_items(line, namespaceToFolder=namespaceToFolder) 
+    line = replace_excalidraw_renders(line)
+    line = replace_tags(line)
     return line
 
 
@@ -169,9 +178,27 @@ def process_logseq_excalidraw_file(logseq_graph_path, logseq_file_path, obsidian
         logging.error(f"Error reading file {logseq_file_path}: {e}")
         return
     
+    frontmatter_processed = False
+    plugin_alias = ''
+
+    for line in content.splitlines():
+        if not frontmatter_processed:
+            prop_match = PROP_PATTERN.match(line)
+            if prop_match:
+                key = prop_match.group(1).strip()
+                value = prop_match.group(2).strip()
+                if key == "excalidraw-plugin-alias":
+                    # Extract the alias value from the property
+                    plugin_alias = value.strip('"\'\/')
+                    logging.debug(f"Found Excalidraw plugin alias: {plugin_alias}")
+            else:
+                # First line that is not a property or blank line marks end of potential properties
+                frontmatter_processed = True
+                break
+    
     json_pattern = r"json\n(.*?)\n"
     match = re.search(json_pattern, content, re.DOTALL)
-    
+
     if match:
         json_string = match.group(1)
 
@@ -190,8 +217,25 @@ def process_logseq_excalidraw_file(logseq_graph_path, logseq_file_path, obsidian
         # Create parent directories if they don't exist
         obsidian_file_path.parent.mkdir(parents=True, exist_ok=True)
 
+        drawing = f'\n```json\n{updated_json_string}\n```\n'
 
-        final_content = f"{OBSIDIAN_EXCALIDRAW_HEADER}\n```json\n{updated_json_string}\n```\n"
+        final_content = f'''---
+
+excalidraw-plugin: parsed
+tags: [excalidraw]
+aliases: [{plugin_alias}]
+---
+==⚠  Switch to EXCALIDRAW VIEW in the MORE OPTIONS menu of this document. ⚠== You can decompress Drawing data with the command palette: 'Decompress current Excalidraw file'. For more info check in plugin settings under 'Saving'
+
+
+# Excalidraw Data
+
+## Text Elements
+
+%%
+## Drawing
+{drawing}
+'''
 
         # --- Write the converted file ---
         try:
@@ -223,6 +267,7 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path, namespaceToFol
     frontmatter_processed = False
     in_blockquote = False
     initial_block = True # Are we still in the potential frontmatter/property block at the top?
+    aliases = []
 
     # --- Extract properties and separate from content ---
     for i, line in enumerate(lines):
@@ -295,6 +340,15 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path, namespaceToFol
     frontmatter = ""
     if properties:
         frontmatter += "---\n"
+
+        # delete some irrelevant properties
+        properties.pop('query-table', None) 
+
+        # change the name on some keys before processing
+        if "alias" in properties:
+            aliases = properties.pop("alias")
+            properties["aliases"] = aliases     
+
         for key, value in properties.items():
             # Basic YAML formatting (does not handle complex types perfectly)
             if isinstance(value, list):
@@ -316,7 +370,6 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path, namespaceToFol
     # --- Determine Output Path (Handle Namespaces -> Folders) ---
     try:
         # Ensure paths are absolute before calculating relative path
-        logging.debug("xxx file path stuff here")
         logging.debug(f"graph path: {logseq_graph_path}, file {logseq_file_path}")
         logseq_file_path = logseq_file_path.resolve()
         
@@ -346,6 +399,35 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path, namespaceToFol
 
 
 # --- Main Conversion Logic ---
+
+file_index = {}
+def create_file_index(logseq_graph_path, namespaceToFolder=False):
+    '''
+    Create an index of all files in the Logseq graph directory. 
+    This is useful for debugging or tracking files and when creating/evaluating links to pages not yet processed.
+    '''
+    file_index = {}
+    for root, dirs, files in os.walk(logseq_graph_path):
+        for file in files:
+            file_path = Path(root) / file
+            relative_path = file_path.relative_to(logseq_graph_path)
+            file_index[file_path.stem.replace('___', '/')] = str(relative_path) 
+    logging.debug(f"File index created with {file_index} entries.")
+    return file_index
+
+def file_exists(tag_or_reference):
+    if tag_or_reference in file_index:
+        return file_index[tag_or_reference]
+    else:
+        # check if tag exists as a value in the dictionart
+
+        for key, value in file_index.items():
+            stripped_name = re.sub(r'\.w+$', '', value) 
+            if stripped_name == tag_or_reference:
+                logging.debug(f"found a matching value: {value} from stripped {stripped_name}")
+                return value 
+
+        return None
 
 def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_overwrite=False, clean=False, namespaceToFolder=False):
     """Main function to orchestrate the conversion."""
@@ -470,6 +552,7 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
     logging.warning("- Page properties (frontmatter)")
     logging.warning("- Formatting and block structures")
     logging.warning("- Excalidraw drawings may need manual relinking if Logseq used complex plugin data.")
+    logging.warning("- TODOs might fail to convert to tasks correctly due to indentation. Tip: Search for '- [ ]' in your vault to find them")
 
     # write all the errors to a file in the obsidian vault root, named migration-errors.md
     if migration_errors:
@@ -499,7 +582,10 @@ if __name__ == "__main__":
         logging.getLogger().setLevel(logging.DEBUG)
 
     # Make global paths accessible within functions if needed (though passed is better)
-    logseq_graph_path = Path(args.logseq_dir)
+    logseq_graph_path = Path(args.logseq_dir).resolve()
     # obsidian_vault_path is handled inside the main function
 
-    convert_logseq_to_obsidian(args.logseq_dir, args.obsidian_dir, args.force, args.clean, args.namespaces)
+    # init the file index for the logseq graph
+    file_index = create_file_index(logseq_graph_path, args.namespaces)
+
+    convert_logseq_to_obsidian(logseq_graph_path, args.obsidian_dir, args.force, args.clean, args.namespaces)

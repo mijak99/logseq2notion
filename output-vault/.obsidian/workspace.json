@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "78602a5561502a65",
+        "id": "4b311ff4f9ff5616",
         "type": "tabs",
         "children": [
           {
-            "id": "4ae3cba1ba34a8a9",
+            "id": "909ad7fdf96bdec9",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Testpage with test cases.md",
+                "file": "pages/Testpage with test cases.md",
                 "mode": "source",
                 "source": false
               },
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#Namespace/Page",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -74,7 +74,8 @@
               "title": "Bookmarks"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -94,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Testpage with test cases.md",
+                "file": "pages/Testpage with test cases.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -113,7 +114,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Testpage with test cases.md",
+                "file": "pages/Testpage with test cases.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -168,27 +169,46 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "4ae3cba1ba34a8a9",
+  "active": "909ad7fdf96bdec9",
   "lastOpenFiles": [
+    "pages/Namespace/Page.md",
+    "pages/Testpage with test cases.md",
+    "pages/Namespace",
+    "Namespace/Page.md",
+    "Namespace",
+    "pages/page.md",
+    "pages/Exacalidraw page.md",
+    "topic.md",
+    "Untitled",
+    "pages/TEST.md",
+    "journals/TEST.md",
+    "journals/2025_04_07.md",
+    "pages/Page with aliases.md",
+    "aliaspage.md",
+    "pages/Namespace___Page.md",
+    "Excalidraw/excalidraw-2025-04-07-16-22-56.md",
+    "pages/contents.md",
+    "pages/Asset Page.md",
+    "Pasted Image 20250408144330_878.png",
+    "Excalidraw/excalidraw-2025-04-07-11-42-51.md",
+    "Pasted Image 20250408143827_377.png",
+    "Excalidraw/excalidraw-2025-04-07-11-42-51.excalidraw.md",
+    "Excalidraw/Drawing 2025-04-08 14.36.02.excalidraw.md",
+    "Pasted Image 20250408143044_575.png",
+    "Excalidraw/My Cool Diagram.md",
+    "Pasted Image 20250408142130_952.png",
+    "Excalidraw/My Cool Diagram",
+    "pages",
+    "journals",
+    "Testpage with test cases.md",
+    "migration-errors.md",
     "Page with aliases.md",
     "Namespace___Page.md",
     "Exacalidraw page.md",
     "contents.md",
     "Pasted Image 20250408100636_106.png",
     "Asset Page.md",
-    "Excalidraw/excalidraw-2025-04-07-16-22-56.md",
-    "Excalidraw/excalidraw-2025-04-07-11-42-51.md",
-    "journals/2025_04_07.md",
-    "Testpage with test cases.md",
-    "Namespace/Page.md",
-    "Namespace",
-    "migration-errors.md",
-    "Excalidraw/A diagram made in logseq 2 now.md",
-    "Namespace/Page/subPage.md",
     "Namespace/Page",
-    "Excalidraw/Drawing 2025-04-07 15.49.40.excalidraw.md",
-    "Excalidraw/Drawing 2025-04-07 16.04.38.excalidraw.md",
-    "Excalidraw/excalidraw-2025-04-07-11-42-51.md.md",
     "Excalidraw"
   ]
 }
