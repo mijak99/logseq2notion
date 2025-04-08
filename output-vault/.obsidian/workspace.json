@@ -74,8 +74,7 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -171,26 +170,30 @@
   },
   "active": "909ad7fdf96bdec9",
   "lastOpenFiles": [
+    "draws/2025-04-08-16-31-24.excalidraw",
+    "assets/image_1744018931252_0.png",
+    "draws",
+    "Excalidraw/excalidraw-2025-04-07-11-42-51.md",
+    "Excalidraw/excalidraw-2025-04-07-16-22-56.md",
+    "journals/2025_04_07.md",
     "pages/Namespace/Page.md",
+    "pages/Asset Page.md",
+    "pages/contents.md",
+    "pages/Exacalidraw page.md",
+    "pages/page.md",
+    "pages/Page with aliases.md",
     "pages/Testpage with test cases.md",
+    "draws/2025-04-08-16-31-24.excalidraw.md",
     "pages/Namespace",
     "Namespace/Page.md",
     "Namespace",
-    "pages/page.md",
-    "pages/Exacalidraw page.md",
     "topic.md",
     "Untitled",
     "pages/TEST.md",
     "journals/TEST.md",
-    "journals/2025_04_07.md",
-    "pages/Page with aliases.md",
     "aliaspage.md",
     "pages/Namespace___Page.md",
-    "Excalidraw/excalidraw-2025-04-07-16-22-56.md",
-    "pages/contents.md",
-    "pages/Asset Page.md",
     "Pasted Image 20250408144330_878.png",
-    "Excalidraw/excalidraw-2025-04-07-11-42-51.md",
     "Pasted Image 20250408143827_377.png",
     "Excalidraw/excalidraw-2025-04-07-11-42-51.excalidraw.md",
     "Excalidraw/Drawing 2025-04-08 14.36.02.excalidraw.md",
@@ -205,9 +208,7 @@
     "Page with aliases.md",
     "Namespace___Page.md",
     "Exacalidraw page.md",
-    "contents.md",
     "Pasted Image 20250408100636_106.png",
-    "Asset Page.md",
     "Namespace/Page",
     "Excalidraw"
   ]

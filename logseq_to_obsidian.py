@@ -543,6 +543,22 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
                 process_logseq_md_file(md_file, obsidian_vault_path, namespaceToFolder)
             file_count += 1
 
+    # --- Process PaDrawsges ---
+    logging.info(f"Processing Logseq pages from: draws")
+    logseq_draws = logseq_graph_path / "draws"
+    obsidian_draws = obsidian_vault_path / "draws"
+    file_count = 0
+    if logseq_draws.is_dir():
+        try:
+            shutil.copytree(logseq_draws, obsidian_draws)
+            logging.info(f"Copied draws to {obsidian_assets}")
+        except Exception as e:
+            logging.error(f"Could not copy draws from {logseq_draws}: {e}")
+            # Continue conversion even if assets fail? Yes.
+    else:
+        logging.warning(f"Logseq assets directory not found: {logseq_draws}")
+    
+
     logging.info(f"Processed {file_count} Markdown files from the 'pages' directory.")
     logging.info("----- Conversion Summary -----")
     logging.info(f"Logseq Graph Source: {logseq_graph_path}")

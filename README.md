@@ -19,11 +19,13 @@ Small test vault
 
 - [x] Excalidraw render links / embeds
 - [x] Tags can be used instead of page-links in logseq. If a tag is used in logseq, and the referred page exists in logseq - link it! 
+- [ ] mermaid diagrams
 
 ### Someday...
 - [ ] Track indentation levels, to better manage weird indentations
 - [ ] Remove leading indents that does not start with a bullet [\-*]
 - [ ] Blocks starting with 'id:: long-id-hash' -and references to them - might want some love
+- [ ] Draws (built-in excalidraw)
 
 ## Features
 
@@ -39,7 +41,7 @@ This is a non exhaustive list of "special" logseq markup converted to Obsidian f
 
 ## Not supported
 
-- whiteboards
+- whiteboards 
 - numbered lists
 
 # Usage
