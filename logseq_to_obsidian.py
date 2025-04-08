@@ -311,11 +311,8 @@ def process_logseq_md_file(logseq_file_path, obsidian_vault_path, namespaceToFol
         logging.debug("xxx file path stuff here")
         logging.debug(f"graph path: {logseq_graph_path}, file {logseq_file_path}")
         logseq_file_path = logseq_file_path.resolve()
-        logseq_pages_path = (logseq_graph_path / LOGSEQ_PAGES_DIR).resolve()
-        logging.debug(f"pages path: {logseq_pages_path}, file {logseq_file_path}")
-        logging.debug(f"resolved to grap path: {logseq_graph_path}, file {logseq_file_path}")
         
-        relative_path = logseq_file_path.relative_to(logseq_pages_path)
+        relative_path = logseq_file_path.relative_to(logseq_graph_path)
         obsidian_file_path = obsidian_vault_path / relative_path
         logging.debug(f"relative path: {relative_path}")
 
@@ -412,6 +409,7 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
     # --- Copy Journals ---
     logseq_journals = logseq_graph_path / LOGSEQ_JOURNALS_DIR
     obsidian_journals = obsidian_vault_path / LOGSEQ_JOURNALS_DIR # Keep same name usually
+    file_count = 0
     if logseq_journals.is_dir():
         try:
             logging.info(f"Copying journals to {obsidian_journals}")

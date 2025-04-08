@@ -6,9 +6,10 @@ This simple tool attempts to converts a logseq graph to an Obsidian Vault
 ## TODO
 
 - [ ] Excaldiraw filenames (plugin alias) to Obsidian
-- [ ] Namespaces as a parameter -- when folders are used, links must also be adjusted
+- [x] Namespaces as a parameter -- when folders are used, links must also be adjusted
 - [ ] Remove leading indents that does not start with a bullet [\-*]
 - [ ] Excalidraw render links / embeds
+- [ ] Track indentation levels, to better manage weird indentations
 
 ## Features
 
@@ -22,8 +23,8 @@ This is a non exhaustive list of "special" logseq markup converted to Obsidian f
 
 ## Not supported
 
-- Excalidraw with embedded images
-
+- whiteboards
+- 
 
 # Usage
 
