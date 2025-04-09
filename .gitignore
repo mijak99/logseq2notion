@@ -1,5 +1,5 @@
 # keep the output vault configuration
-output-vault/[a-z]*
+output-vault/
 
 .vscode
 
