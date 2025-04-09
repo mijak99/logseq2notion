@@ -99,7 +99,10 @@ def convert_excalidraw_link(match, link_type):
 
 
 def remove_leading_bullets(line): 
-    return re.sub(r'^\-\s*', '', line)
+    line = re.sub(r'\t(.*)', r'\1', line) # remove leading tab
+    line = re.sub(r'^\-\s*', '', line)
+    return line
+
 
 def replace_any_todo_items(line):
     line = re.sub(r'^((\s*)(-?\s)?)(TODO|WAITING|LATER)\W+(.*)$', r'\2- [ ] \5', line)
@@ -569,6 +572,7 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
     logging.warning("- Formatting and block structures")
     logging.warning("- Excalidraw drawings may need manual relinking if Logseq used complex plugin data.")
     logging.warning("- TODOs might fail to convert to tasks correctly due to indentation. Tip: Search for '- [ ]' in your vault to find them")
+    logging.warning("- Using daily notes? Check the 'journals' folder for converted files.")
 
     # write all the errors to a file in the obsidian vault root, named migration-errors.md
     if migration_errors:
@@ -577,7 +581,6 @@ def convert_logseq_to_obsidian(logseq_graph_path, obsidian_vault_path, force_ove
             for error in migration_errors:
                 error_file.write(f"- {error}\n")
         logging.info(f"Errors logged to {error_file_path}")
-
 
 
     return True
