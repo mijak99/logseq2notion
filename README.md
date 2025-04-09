@@ -3,13 +3,59 @@
 
 This simple tool attempts to converts a logseq graph to an Obsidian Vault
 
+# Features
+
+This is a non exhaustive list of "special" logseq markup converted to Obsidian format.
+
+The tool makes a best effort to
+
+- migrates page properties
+- migrates page aliases
+- When tags are used as Link to a page in Logseq, the page link is retained. 
+- Retains asset links (embedded images, etc)
+- Support for the Excalidraw plugin by haydenull  
+    - If you have named/labelled your drawing in logseq-excalidraw, the conversion will retain your name as a page alias. 
+    - This means your file is searchable as in logseq, but it's unfortunately still hard to browse for the diagram if you forget your labels 
+- convert namespaces to directories (optional, see -c)
+
+
+## Not supported
+
+- whiteboards 
+- numbered lists
+
+# Usage
+
+# Usage
+
+How to Use:
+
+1. Clone the repo
+1. Run from Terminal:
+
+> python logseq_to_obsidian.py /path/to/logseq-graph-dir -f -n /path/to/new/obsidian-vault
+
+Open the new vault in Obsidian, and work from there.
+
+For more details on usage:
+
+> python logseq_to_obsidian.py --help
+
+
+
+# Development notes
+
+## File structure
+
+- tests/testgraph - a graph used for testing
+- tests/ : TODO write more unit tests
+- docs/ : Some documentation/research 
+- ouput-vault : Just a placeholder output dir for testing purposes 
+
 ## Testing
 
-Large vault
-> python logseq_to_obsidian.py ~/logseq -f ~/test-obsidian -c 
-
-Small test vault
 > python logseq_to_obsidian.py tests/testgraph/ -f output-vault/  -v -c
+
 
 ## TODO
 
@@ -27,48 +73,5 @@ Small test vault
 - [ ] Blocks starting with 'id:: long-id-hash' -and references to them - might want some love
 - [ ] Draws (built-in excalidraw)
 
-## Features
-
-This is a non exhaustive list of "special" logseq markup converted to Obsidian format
-
-- namespaces to directories
-- page properties
-- asset links
-- Excalidraw plugin support 
-    - If you have named/labelled your drawing in logseq-excalidraw, the conversion will retain your name as a page alias. 
-    - This means your file is searchable as in logseq, but it's unfortunately still hard to browse for the diagram if you forget your labels
 
 
-## Not supported
-
-- whiteboards 
-- numbered lists
-
-# Usage
-
-How to Use:
-
-1. Save: Save the code above as a Python file (e.g., logseq_to_obsidian.py).
-1.  Backup: Seriously, back up your Logseq graph directory first!
-1.  Run from Terminal:
-
-```bash
-python logseq_to_obsidian.py /path/to/your/logseq_graph /path/to/your/new_obsidian_vault
-```
-
-Replace /path/to/your/logseq_graph with the actual path to your Logseq directory (the one containing pages, assets, etc.).
-
-Replace /path/to/your/new_obsidian_vault with the desired path for the new Obsidian vault directory. This directory should not exist unless you use the --force option.
-
-4. Options:
-  - --force or -f: Use this if the output directory already exists and you want to delete and replace it. Use with caution!
-  - --verbose or -v: Shows more detailed debug messages about what the script is doing (useful for troubleshooting).
-
-5. Review: Open the newly created directory as an Obsidian vault. Carefully check:
-  - Are your pages there, including those previously in namespaces (now likely in folders)?
-  - Do page properties appear correctly as YAML frontmatter at the top?
-  - Do links to images/PDFs/etc. in your assets folder work? (Obsidian might use ![[assets/image.png]] or [text](assets/doc.pdf))
-  - Do links to Excalidraw drawings work? Check if they appear as ![[Excalidraw/drawing.excalidraw]]. If not, you might need to manually edit the Markdown file to fix the link syntax based on where the .excalidraw file was copied.
-
-
-This script provides a solid foundation for the conversion. Depending on the specifics and complexity of your Logseq graph, some manual adjustments in Obsidian might still be needed

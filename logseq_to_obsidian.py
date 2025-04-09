@@ -590,8 +590,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert a Logseq graph directory to an Obsidian vault.")
     parser.add_argument("logseq_dir", help="Path to the Logseq graph directory.")
     parser.add_argument("obsidian_dir", help="Path to the new directory for the Obsidian vault.")
-    parser.add_argument("-f", "--force", action="store_true", help="Overwrite the output directory if it exists.")
-    parser.add_argument("-c", "--clean", action="store_true", help="Remove the output directory if it exists.")
+    parser.add_argument("-f", "--force", action="store_true", help="Overwrite the output directory if it exists, without deleting first (see -c).")
+    parser.add_argument("-c", "--clean", action="store_true", help="Remove the output directory if it exists, but keeping any .obsidian settings.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose debug logging.")
     parser.add_argument("-n", "--namespaces", action="store_true", help="Convert namespaces to folders.")
 
