@@ -9,15 +9,17 @@ This is a non exhaustive list of "special" logseq markup converted to Obsidian f
 
 The tool makes a best effort to
 
-- migrates page properties
-- migrates page aliases
+- migrate page properties
+- migrate page aliases
+- convert logseq tasks to markdown
+- removes logseq weird-ish indentations (eg always using bullets at the start of a block)
 - When tags are used as Link to a page in Logseq, the page link is retained. 
 - Retains asset links (embedded images, etc)
 - Support for the Excalidraw plugin by haydenull  
     - If you have named/labelled your drawing in logseq-excalidraw, the conversion will retain your name as a page alias. 
     - This means your file is searchable as in logseq, but it's unfortunately still hard to browse for the diagram if you forget your labels 
 - convert namespaces to directories (optional, see -c)
-
+- Generally, try to be as non-destructive as possible, retaining rather than removing where possible
 
 ## Not supported
 
