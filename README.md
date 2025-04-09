@@ -41,6 +41,10 @@ For more details on usage:
 
 > python logseq_to_obsidian.py --help
 
+If this was helpful and saved you any time and frustration, consider to let me know about it.
+If you insist, you can also [buy me a coffee](https://buymeacoffee.com/mikaeljakov)
+
+--- 
 
 
 # Development notes
